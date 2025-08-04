@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Portal - Enhanced</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }   
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #6b7280;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-container {
+            position: relative;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .notification-container:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .notification-bell {
+            font-size: 20px;
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .role-selector {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .role-selector:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: block;
+        }
+
+        .dashboard.hidden {
+            display: none;
+        }
+
+        .greeting-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .greeting-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .weather-icon {
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .greeting-text h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .greeting-text p {
+            color: #6b7280;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-btn {
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn.secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            border: 2px solid #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn.secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            padding: 0.5rem;
+            border-radius: 12px;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        /*notification container*/
+        .notification-container {
+  position: relative;
+}
+
+.notification-popup {
+  position: absolute;
+  top: 30px; /* adjust based on bell icon size */
+  right: 0;
+  width: 220px;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: none;
+  z-index: 1000;
+  padding: 10px;
+}
+
+.notification-popup.show {
+  display: block;
+}
+
+
+        /* BDM Dashboard */
+        .bdm-dashboard {
+            display: none;
+        }
+
+        .bdm-dashboard.active {
+            display: block;
+        }
+
+        .bdm-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .bdm-stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .bdm-stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .bdm-stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .bdm-stat-title {
+            font-weight: 600;
+            color: #374151;
+            font-size: 1.1rem;
+        }
+
+        .bdm-stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-approved .bdm-stat-value { color: #10b981; }
+        .status-pending .bdm-stat-value { color: #f59e0b; }
+        .status-verified .bdm-stat-value { color: #3b82f6; }
+
+        /* Notification Panel */
+        .notification-panel {
+            position: fixed;
+            top: 80px;
+            right: 2rem;
+            width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+            transform: translateX(450px);
+            transition: all 0.3s ease;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .notification-panel.active {
+            transform: translateX(0);
+        }
+
+        .notification-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #374151;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .notification-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .notification-item {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .notification-item.unread {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .notification-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .notification-text {
+            flex: 1;
+        }
+
+        .notification-message {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-meta {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .notification-panel {
+                width: calc(100vw - 2rem);
+                right: 1rem;
+                left: 1rem;
+            }
+        }
+
+        /*notificationnn */
+.notification-dropdown li:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-left">
+                <div class="logo">
+                    <div class="logo-icon">EP</div>
+                    <span class="logo-text">Expense Portal</span>
+                </div>
+                
+                <div class="nav-links">
+                    <button class="nav-link active" >HOME</button>
+                    <button class="nav-link" onclick="window.location.href='expense.html'">EXPENSES</button>
+                    <button class="nav-link" onclick="window.location.href='reports.html'">REPORTS</button>
+                    <button class="nav-link" onclick="showView('bdm', event)" id="bdm-nav" style="display: none;">BDM DASHBOARD</button>
+                </div>
+            </div>
+            
+            <div class="navbar-right">      
+          
+                
+                </select>
+        <!-- Notification Icon -->
+<div class="notification-wrapper" style="position: relative;">
+  <button id="notificationBtn" style="font-size: 20px;">🔔</button>
+  <div id="notificationDropdown" class="notification-dropdown" style="display: none; position: absolute; top: 30px; right: 0; background: #fff; border: 1px solid #ccc; width: 250px; max-height: 300px; overflow-y: auto; z-index: 1000;">
+    <ul id="notificationList" style="list-style: none; padding: 10px; margin: 0;"></ul>
+  </div>
+</div>
+
+
+
+
+              <a href="profile.html" class="user-profile" style="text-decoration: none;">
+  <div>
+    <div style="font-weight: 600; color: #374151;" id="user-name">Tanuja</div>
+  </div>
+  <div class="user-avatar">T</div>
+</a>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notification Panel -->
+    <div class="notification-panel" id="notification-panel">
+        <div class="notification-header">
+            <div class="notification-title">Notifications</div>
+            <button class="notification-close" onclick="toggleNotifications()">×</button>
+        </div>
+        <div id="notification-list">
+            <!-- Notifications will be populated here -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Employee Dashboard -->
+        <div id="dashboard" class="dashboard">
+            <div class="greeting-card">
+                <div class="greeting-header">
+                    <span class="weather-icon">☀️</span>
+                    <div class="greeting-text">
+                        <h1>Good Afternoon,</h1>
+                        <p>Tanuja! Ready to manage your expenses?</p>
+                    </div>
+                </div>
+            </div>  
+
+            <div class="action-buttons">
+                <button class="action-btn primary" onclick="window.location.href='expense_form.html'">
+                    <span>➕</span>
+                    Add Expense
+                </button>
+               
+               
+                <button class="action-btn secondary" onclick="window.location.href=''">
+                    <span>📋</span>
+                    View Reports
+                </button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">📊</span>
+                        <span class="stat-label">Unsubmitted</span>
+                    </div>
+                    <div class="stat-value" id="unsubmitted-count">0</div>
+                    <div class="stat-change">↗️ Ready to submit</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">⏳</span>
+                        <span class="stat-label">Pending Approval</span>
+                    </div>
+                    <div class="stat-value" id="pending-count">2</div>
+                    <div class="stat-change">⏰ Awaiting review</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">✅</span>
+                        <span class="stat-label">Approved</span>
+                    </div>
+                    <div class="stat-value" id="approved-count">15</div>
+                    <div class="stat-change">🎉 This month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-icon">💳</span>
+                        <span class="stat-label">Total Amount</span>
+                    </div>
+                    <div class="stat-value" id="total-amount">₹12,450</div>
+                    <div class="stat-change">📈 +15% from last month</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BDM Dashboard -->
+        <div id="bdm" class="bdm-dashboard">
+            <div class="greeting-card">
+                <div class="greeting-header">
+                    <span class="weather-icon">👨‍💼</span>
+                    <div class="greeting-text">
+                        <h1>BDM Dashboard</h1>
+                        <p>Monitor and approve expense reports</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bdm-stats-grid">
+                <div class="bdm-stat-card status-pending" onclick="filterExpenses('pending')">
+                    <div class="bdm-stat-header">
+                        <div class="bdm-stat-title">Pending Approval</div>
+                        <span style="font-size: 1.5rem;">⏳</span>
+                    </div>
+                    <div class="bdm-stat-value" id="bdm-pending-count">8</div>
+                    <div style="color: #6b7280; font-size: 0.875rem;">Requires your attention</div>
+                </div>
+                
+                <div class="bdm-stat-card status-approved" onclick="filterExpenses('approved')">
+                    <div class="bdm-stat-header">
+                        <div class="bdm-stat-title">Approved Today</div>
+                        <span style="font-size: 1.5rem;">✅</span>
+                    </div>
+                    <div class="bdm-stat-value" id="bdm-approved-count">12</div>
+                    <div style="color: #6b7280; font-size: 0.875rem;">Successfully processed</div>
+                </div>
+                
+                <div class="bdm-stat-card status-verified" onclick="filterExpenses('verified')">
+                    <div class="bdm-stat-header">
+                        <div class="bdm-stat-title">Verified</div>
+                        <span style="font-size: 1.5rem;">🔍</span>
+                    </div>
+                    <div class="bdm-stat-value" id="bdm-verified-count">45</div>
+                    <div style="color: #6b7280; font-size: 0.875rem;">This month</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expenses View -->
+        <div id="expenses" class="expenses-view" style="display: none;">
+            <div class="greeting-card">
+                <h2>Expense Management</h2>
+                <p>Track and manage all your expenses</p>
+            </div>
+        </div>
+
+        <!-- Reports View -->
+        <div id="reports" class="reports-view" style="display: none;">
+            <div class="greeting-card">
+                <h2>Reports & Analytics</h2>
+                <p>View detailed expense reports and analytics</p>
+            </div>
+        </div>
+
+       <script>
+  const bell = document.getElementById("notification-bell");
+  const dropdown = document.getElementById("notification-dropdown");
+  const list = document.getElementById("notification-list");
+
+  bell.addEventListener("click", () => {
+    // Toggle visibility
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+
+    // Fetch notifications
+    fetch("http://localhost:3000/api/dashboard/notifications")
+      .then(res => res.json())
+      .then(data => {
+        list.innerHTML = "";
+
+        if (data.length === 0) {
+          list.innerHTML = "<li style='padding: 8px;'>No notifications.</li>";
+        } else {
+          data.forEach(note => {
+            const li = document.createElement("li");
+            li.textContent = note.message;
+            li.style.padding = "6px 0";
+            li.style.borderBottom = "1px solid #eee";
+            list.appendChild(li);
+          });
+        }
+      })
+      .catch(err => {
+        console.error("Notification error:", err);
+        list.innerHTML = "<li style='color: red;'>Error loading notifications</li>";
+      });
+  });
+
+  // Close dropdown if clicked outside
+  window.addEventListener("click", (event) => {
+    if (!document.getElementById("notification-container").contains(event.target)) {
+      dropdown.style.display = "none";
+    }
+  });
+</script>
+
+
+    </main>
+
+    <script>
+        // Sample data
+        const mockData = {
+            employee: {
+                unsubmitted: 0,
+                pending: 2,
+                approved: 15,
+                totalAmount: '₹12,450'
+            },
+            bdm: {
+                pending: 8, 
+                approved: 12,
+                verified: 45
+            },
+            notifications: [
+                {
+                    id: 1,
+                    type: 'approval',
+                    message: 'Expense #EXP001 has been approved',
+                    time: '2 minutes ago',
+                    read: false,
+                    avatar: 'BDM'
+                },
+                {
+                    id: 2,
+                    type: 'submission',
+                    message: 'New expense report submitted for review',
+                    time: '1 hour ago',
+                    read: false,
+                    avatar: 'EMP'
+                },
+                {
+                    id: 3,
+                    type: 'reminder',
+                    message: 'Monthly expense report due in 3 days',
+                    time: '3 hours ago',
+                    read: true,
+                    avatar: 'SYS'
+                }
+            ]
+        };
+
+        let currentRole = 'employee';
+        let notificationPanelOpen = false;
+
+        // Initialize the application
+        function init() {
+            loadDashboardData();
+           function loadNotifications() {
+    const userId = 1; // Replace this with the actual logged-in user's ID
+    const notificationList = document.getElementById('notification-list');
+    notificationList.innerHTML = '';
+
+    fetch(`http://localhost:3000/api/notifications?user_id=${userId}`)
+        .then(res => res.json())
+        .then(notifications => {
+            notifications.forEach(notification => {
+                const item = document.createElement('div');
+                item.className = `notification-item ${notification.read_status ? '' : 'unread'}`;
+                item.innerHTML = `
+                    <div class="notification-content">
+                        <p>${notification.message}</p>
+                        <small>${new Date(notification.created_at).toLocaleString()}</small>
+                    </div>
+                `;
+                notificationList.appendChild(item);
+            });
+        })
+        .catch(err => {
+            console.error("Failed to load notifications:", err);
+        });
+}
+
+            updateNotificationCount();
+        }
+
+        // Switch between roles
+        function switchRole(role) {
+            currentRole = role;
+            const bdmNav = document.getElementById('bdm-nav');
+            const userName = document.getElementById('user-name');
+            const userRole = document.getElementById('user-role');
+            
+            if (role === 'bdm') {
+                bdmNav.style.display = 'block';
+                userName.textContent = 'Manager';
+                userRole.textContent = 'BDM';
+                showView('bdm');
+            } else {
+                bdmNav.style.display = 'none';
+                userName.textContent = 'Tanuja';
+                userRole.textContent = 'Employee';
+                showView('dashboard');
+            }
+            
+            loadDashboardData();
+        }
+
+        // Show different views
+        function showView(viewName, event) {
+            // Hide all views
+            const views = ['dashboard', 'expenses', 'reports', 'bdm'];
+            views.forEach(view => {
+                const element = document.getElementById(view);
+                if (element) {
+                    element.style.display = 'none';
+                    element.classList.remove('active');
+                }
+            });
+
+            // Show selected view
+            const selectedView = document.getElementById(viewName);
+            if (selectedView) {
+                selectedView.style.display = 'block';
+                selectedView.classList.add('active');
+            }
+
+            // navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            if (event) {
+                event.target.classList.add('active');
+            }
+        }
+
+        //dashboard data
+        function loadDashboardData() {
+            if (currentRole === 'employee') {
+                document.getElementById('unsubmitted-count').textContent = mockData.employee.unsubmitted;
+                document.getElementById('pending-count').textContent = mockData.employee.pending;
+                document.getElementById('approved-count').textContent = mockData.employee.approved;
+                document.getElementById('total-amount').textContent = mockData.employee.totalAmount;
+            } else if (currentRole === 'bdm') {
+                document.getElementById('bdm-pending-count').textContent = mockData.bdm.pending;
+                document.getElementById('bdm-approved-count').textContent = mockData.bdm.approved;
+                document.getElementById('bdm-verified-count').textContent = mockData.bdm.verified;
+            }
+        }
+//  notifications
+function loadNotifications() {
+    const notificationList = document.getElementById('notification-list');
+    notificationList.innerHTML = '';
+
+    mockData.notifications.forEach(notification => {
+        const notificationItem = document.createElement('div');
+        notificationItem.className = `notification-item ${!notification.read ? 'unread' : ''}`;
+        
+        notificationItem.innerHTML = `
+            <div class="notification-content">
+                <strong>${notification.title}</strong>
+                <p>${notification.message}</p>
+                <small>${notification.date}</small>
+            </div>
+        `;
+
+        // read on click
+        notificationItem.addEventListener('click', () => {
+            notification.read = true;
+            notificationItem.classList.remove('unread');
+            // You can add an API call here to update status in DB
+        });function toggleNotifications() {
+  const dropdown = document.getElementById("notificationDropdown");
+  if (dropdown.style.display === "block") {
+    dropdown.style.display = "none";
+  } else {
+    dropdown.style.display = "block";
+  }
+}
+
+window.onload = function () {
+    loadDashboardData();
+    loadNotifications(); // call it here
+};
+
+        notificationList.appendChild(notificationItem);
+    });
+}

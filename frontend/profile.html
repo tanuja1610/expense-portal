@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BDM Profile</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+    }
+
+    .profile-container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .initials-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #3f51b5;
+      color: #fff;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .user-info h2 {
+      margin: 0;
+      font-size: 22px;
+      color: #333;
+    }
+
+    .user-info p {
+      margin: 4px 0 0;
+      color: #777;
+      font-size: 14px;
+    }
+
+    .profile-actions {
+      margin-top: 20px;
+    }
+
+    .profile-actions button,
+    .profile-actions a {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 15px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .profile-actions button:hover,
+    .profile-actions a:hover {
+      background-color: #1565c0;
+    }
+
+    .help-link {
+      background-color: #4caf50;
+    }
+
+    .signout-btn {
+      background-color: #f44336;
+    }
+
+    .note {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="initials-circle" id="initials">TN</div>
+      <div class="user-info">
+        <h2 id="fullName">Tanuja Fulore</h2>
+        <p id="email">tanuja@example.com</p>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <a href="/help.html" target="_blank" class="help-link">Help Center</a>
+      <button onclick="changePassword()">Change Password</button>
+      <button onclick="logout()" class="signout-btn">Sign Out</button>
+    </div>
+
+    <div class="note">Contact your admin for profile changes.</div>
+  </div>
+
+  <script>
+    // Normally fetched from backend
+    const user = {
+      firstName: "Tanuja",
+      lastName: "Fulore",
+      email: "fuloretanuja@gmail.com"
+    };
+
+    document.getElementById("initials").textContent = 
+      (user.firstName[0] + user.lastName[0]).toUpperCase();
+    document.getElementById("fullName").textContent = 
+      user.firstName + " " + user.lastName;
+    document.getElementById("email").textContent = user.email;
+
+    function logout() {
+      // Optionally clear token/session
+      alert("Signed out successfully!");
+      window.location.href = "login.html";
+    }
+
+    function changePassword() { 
+      window.location.href = "reset-password.html";
+    }
+  </script>
+</body>
+</html>

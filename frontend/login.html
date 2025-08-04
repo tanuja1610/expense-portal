@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Expense Portal</title>
+  <link rel="stylesheet" href="styles/login.css" />
+  <style>
+    .toggle-buttons {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    .toggle-buttons button {
+      flex: 1;
+      padding: 10px;
+      margin: 0 5px;
+      border: 1px solid #ccc;
+      background: #f0f0f0;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 8px;
+    }
+    .toggle-buttons button.active {
+      background: #667eea;
+      color: #ffffff;
+      border-color: #667eea;
+    }
+    .input-group {
+      display: none;
+    }
+    .input-group.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <div class="logo">💼 Expense Portal</div>
+      <h2>Welcome Back</h2>
+
+      <!-- 🔄 Toggle Buttons -->
+      <div class="toggle-buttons">
+        <button type="button" id="emailBtn" class="active">Login with Email</button>
+        <button type="button" id="mobileBtn" class="active">Login with Mobile</button>
+      </div>
+
+      <form id="loginForm">
+        <!-- Email Group -->
+        <div id="emailGroup" class="input-group active">
+          <input type="email" name="email" placeholder="Email ID" />
+        </div>
+
+        <!-- Mobile Group -->
+        <div id="mobileGroup" class="input-group">
+          <input type="text" name="mobile" placeholder="Mobile Number" pattern="[0-9]{10}" />
+        </div>
+
+        <!-- Password (common) -->
+        <input type="password" name="password" placeholder="Password" required />
+
+   <div class="options">
+  <a href="forgot_password.html">Forgot Password?</a>
+</div>
+
+        <button type="submit">Login</button>
+
+       
+        <p style="color: #888; font-size: 0.85rem;">Login with either Email or Mobile Number</p>
+      </form>
+    </div>
+
+
+  </div>
+
+  <script>
+
+    // 🔁 Clear old login session if any
+localStorage.removeItem("user_id");
+localStorage.removeItem("role");
+localStorage.removeItem("name");
+
+    const emailBtn = document.getElementById("emailBtn");
+    const mobileBtn = document.getElementById("mobileBtn");
+    const emailGroup = document.getElementById("emailGroup");
+    const mobileGroup = document.getElementById("mobileGroup");
+
+    emailBtn.addEventListener("click", () => {
+      emailGroup.classList.add("active");
+      mobileGroup.classList.remove("active");
+      emailBtn.classList.add("active");
+      mobileBtn.classList.remove("active");
+    });
+
+    mobileBtn.addEventListener("click", () => {
+      mobileGroup.classList.add("active");
+      emailGroup.classList.remove("active");
+      mobileBtn.classList.add("active");
+      emailBtn.classList.remove("active");
+    });
+
+    // Optional: validate form
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      const emailVisible = emailGroup.classList.contains("active");
+      const mobileVisible = mobileGroup.classList.contains("active");
+      const email = this.email.value.trim();
+      const mobile = this.mobile.value.trim();
+      const password = this.password.value.trim();
+
+      if (emailVisible && !email) {
+        alert("Please enter your email.");
+        e.preventDefault();
+      }
+
+      if (mobileVisible && !mobile) {
+        alert("Please enter your mobile number.");
+        e.preventDefault();
+      }
+
+      if (!password) {
+        alert("Please enter your password.");
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
+<script>
+document.getElementById("loginForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const email = this.email.value.trim();
+  const mobile = this.mobile.value.trim();
+  const password = this.password.value.trim();
+
+  if (!password || (!email && !mobile)) {
+    alert("Please enter your credentials.");
+    return;
+  }
+
+  fetch("http://localhost:3000/api/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      email: email || undefined,
+      mobile: mobile || undefined,
+      password: password
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+ if (data.message === "Login successful") {
+  alert("✅ Login successful!");
+
+  // ✅ Store user_id, role, and name in localStorage
+  localStorage.setItem("user_id", data.user_id);
+  localStorage.setItem("role", data.role);
+  localStorage.setItem("name", data.name);
+
+  // ✅ Redirect to appropriate dashboard
+  if (data.role === "admin") {
+    window.location.href = "admin-dashboard.html";
+  } else if (data.role === "manager") {
+    window.location.href = "manager-dashboard.html";
+  } else {
+    window.location.href = "dashboard.html";
+  }
+}
+ else {
+      alert("❌ " + data.message);
+    }
+  })
+  .catch(err => {
+    console.error("Login error:", err);
+    alert("Something went wrong!");
+  });
+});
+</script>

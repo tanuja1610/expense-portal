@@ -1,0 +1,98 @@
+/* ============ NAVBAR STYLES ============ */
+
+.navbar {
+  background-color: #1e3a8a; /* Tailwind blue-900 */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+}
+
+/* Left: Logo + Brand + Nav Buttons */
+.navbar .left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+/* ============ NAVBAR STYLES ============ */
+
+.navbar {
+  background-color: #1e3a8a; /* Tailwind blue-900 */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+}
+
+/* Left: Logo + Brand + Nav Buttons */
+.navbar .left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar .left .logo {
+  background-color: #2563eb; /* Tailwind blue-600 */
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.navbar .left .brand {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 30px;
+}
+
+.navbar .left button {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: 500;
+}
+
+.navbar .left button:hover {
+  background-color: #1d4ed8; /* Tailwind blue-700 */
+}
+
+.navbar .left button.active {
+  background-color: #1d4ed8;
+}
+
+/* Right: Icons + Profile */
+.navbar .right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar .right span {
+  font-size: 14px;
+}
+
+.navbar .right .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background-color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}

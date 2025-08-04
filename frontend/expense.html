@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title::before {
+            content: "💰";
+            font-size: 32px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8fafc;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        .filters-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border-left: 4px solid #4f46e5;
+        }
+
+        .bulk-actions {
+            display: none;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            gap: 15px;
+            border: 2px solid #f59e0b;
+        }
+
+        .bulk-actions.show {
+            display: flex;
+        }
+
+        .expense-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .expense-table th,
+        .expense-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .expense-table th {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            font-weight: 600;
+            color: #374151;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .expense-table tr:hover {
+            background: #f8fafc;
+            transform: scale(1.005);
+            transition: all 0.3s ease;
+        }
+
+        .expense-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-submitted {
+            background: #fef3c7;
+            color: #d97706;
+            border: 1px solid #f59e0b;
+        }
+
+        .status-verified {
+            background: #d1fae5;
+            color: #059669;
+            border: 1px solid #10b981;
+        }
+
+        .status-declined {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #ef4444;
+        }
+
+        .status-unreported {
+            background: #e0e7ff;
+            color: #3730a3;
+            border: 1px solid #6366f1;
+        }
+           .status-approved by manager {
+            background: #e0e7ff;
+            color: #3730a3;
+            border: 1px solid #6366f1;
+        }
+        .checkbox-input {
+            width: 18px;
+            height: 18px;
+            accent-color: #4f46e5;
+            cursor: pointer;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        .btn-edit {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        .btn-edit:hover {
+            background: #bfdbfe;
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #ef4444;
+        }
+
+        .btn-delete:hover {
+            background: #fecaca;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .file-upload {
+            border: 2px dashed #d1d5db;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: #4f46e5;
+            background: #f8fafc;
+        }
+
+        .file-upload.dragover {
+            border-color: #4f46e5;
+            background: #eff6ff;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .loading::after {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            background: white;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover {
+            background: #f3f4f6;
+        }
+
+        .pagination button.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: stretch;
+            }
+
+            .filters-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filters {
+                flex-wrap: wrap;
+            }
+
+            .expense-table {
+                font-size: 14px;
+            }
+
+            .expense-table th,
+            .expense-table td {
+                padding: 12px 8px;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+
+                
+            }
+        }
+        @media (max-width: 1366px) {
+    .expense-table {
+        min-width: 1200px;
+    }
+}
+
+.expense-table td:nth-child(14) {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Expense Management</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openAddExpenseModal()">
+                    ➕ Add Expense
+                </button>
+                
+           
+            </div>
+        </div>
+
+        <div class="filters-section">
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select class="filter-input" id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="submitted">submitted</option>
+                        <option value="approved">declined</option>
+                        <option value="pending">unreported</option>
+                        <option value="pending">verified</option>
+                        <option value="pending">approved by manager</option>
+
+
+                    
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Type</label>
+                    <select class="filter-input" id="typeFilter">
+                        <option value="">All Types</option>
+                        <option value="Business">Business</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Date From</label>
+                    <input type="date" class="filter-input" id="dateFromFilter">
+                </div>
+                <div class="filter-group">
+                    <label>Date To</label>
+                    <input type="date" class="filter-input" id="dateToFilter">
+                </div>
+                <button class="btn btn-secondary" onclick="applyFilters()">Apply Filters</button>
+                <button class="btn btn-secondary" onclick="clearFilters()">Clear</button>
+            </div>
+        </div>
+
+        <div class="results-info">
+            <div>
+                <strong>Showing results for:</strong> <span id="filterSummary">All Expenses</span>
+            </div>
+            <div>
+                <strong>Total:</strong> <span id="totalCount">0</span> expenses | 
+                <strong>Amount:</strong> ₹<span id="totalAmount">0.00</span>
+            </div>
+        </div>
+
+        <div class="bulk-actions" id="bulkActions">
+            <span><strong>Selected:</strong> <span id="selectedCount">0</span> items</span>
+            <button class="btn btn-primary btn-small" onclick="bulkApprove()">✓ Approve Selected</button>
+            <button class="btn btn-secondary btn-small" onclick="bulkReject()">✗ Reject Selected</button>
+            <button class="btn btn-secondary btn-small" onclick="bulkDelete()">🗑 Delete Selected</button>
+        </div>
+
+        <div id="message"></div>
+
+       <div class="table-container" style="overflow-x: auto;">
+    <table class="expense-table">
+
+<thead>
+  <tr>
+    <th><input type="checkbox" class="checkbox-input" onchange="toggleAll(this)"></th>
+    <th>Status</th>
+    <th>Policy</th>
+    <th>User</th>
+    <th>Merchant</th>
+    <th>Transaction ID</th>
+    <th>Date Of Expense</th>
+    <th>Expense Type</th>
+    <th>Category</th>
+    <th>Subcategory</th>
+    <th>Time</th>
+    <th>City</th>
+    <th>City Group</th>
+    <th>Wallet</th>
+    <th>Amount</th>
+    <th>Description</th>
+    <th>Actions</th>
+     <th></th>
+  </tr>
+</thead>
+
+                <tbody id="expenseTableBody">
+                    <tr>
+                        <td colspan="10" class="loading">Loading expenses...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination" id="pagination">
+            
+        </div>
+    </div>
+
+    <div id="expenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add New Expense</h2>
+                <button class="close-btn" onclick="closeExpenseModal()">&times;</button>
+            </div>
+            <form id="expenseForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="merchant">Merchant *</label>
+                        <input type="text" id="merchant" name="merchant" required placeholder="Enter merchant name">
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount *</label>
+                        <input type="number" id="amount" name="amount" step="0.01" required placeholder="0.00">
+                    </div>
+                      <div class="form-group">
+                        <label for="category">category *</label>
+                        <input type="text" id="category" name="category"  required placeholder="Enter category name">
+                    </div>
+                      <div class="form-group">
+                        <label for="user">User</label>
+                        <input type="text" id="user" name="user"  required placeholder="Enter User name">
+                    </div>
+                      <div class="form-group">
+                        <label for="wallet">Wallet *</label>
+                        <input type="text" id="wallet" name="wallet"  required placeholder="Enter wallet name">
+                    </div>
+                  
+<div class="form-group">
+  <label for="description">Description</label>
+  <textarea id="description" name="description" placeholder="Enter expense description"></textarea>
+</div>
+
+                      <div class="form-group">
+                        <label for="city">City *</label>
+                        <input type="text" id="city" name="city"  required placeholder="Enter city name">
+
+                    </div>
+                     <div class="form-group">
+                        <label for="citygroup">City Group</label>
+                        <input type="text" id="citygroup" name="citygroup"  required placeholder="Enter citygroup">
+                    </div>
+                     <div class="form-group">
+                        <label for="creationdate">Creation date</label>
+                        <input type="text" id="creationdate" name="creationdate"  required placeholder="creationdate">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expenseType">Expense Type *</label>
+                        <select id="expenseType" name="expenseType" required>
+                            <option value="">Select Type</option>
+                            <option value="Business">Business</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Food">Food</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseDate">Date of Expense *</label>
+                        <input type="date" id="expenseDate" name="expenseDate" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Enter expense description"></textarea>
+                </div>
+                <div class="form-group" id="distanceField" style="display: none;">
+  <label for="distance_km">Distance (KM)</label>
+  <input type="number" id="distance_km" name="distance_km" placeholder="Enter distance in km">
+</div>
+
+                <div class="form-group">
+                    <label>Receipt Upload</label>
+                    <div class="file-upload" onclick="document.getElementById('receiptFile').click()">
+                        <p>📎 Click to upload receipt or drag and drop</p>
+                        <p style="font-size: 12px; color: #6b7280;">Supports: JPG, PNG, PDF (Max 5MB)</p>
+                        <input type="file" id="receiptFile" name="receiptFile" accept=".jpg,.jpeg,.png,.pdf" style="display: none;">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Add Expense</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeExpenseModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+  const userId = 1; 
+
+  fetch(`http://localhost:3000/api/expenses?user_id=${userId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const tableBody = document.getElementById("expenseTableBody");
+
+      tableBody.innerHTML = "";
+
+      data.expenses.forEach((expense) => {
+        const row = document.createElement("tr");
+       row.innerHTML = `
+  <td>${expense.expense_date}</td>
+  <td>${expense.time_of_expense}</td>
+  <td>${expense.username}</td>
+  <td>${expense.amount}</td>
+  <td>${expense.category_name || '-'}</td>
+  <td>${expense.subcategory_name || '-'}</td>
+  <td>${expense.policy_violation || '-'}</td>
+  <td>${expense.description}</td>
+  <td>${expense.city}</td>
+  <td>${expense.expense_mode}</td>
+  <td><a href="/uploads/${expense.bill_file}" target="_blank">📎 View</a></td>
+`;
+
+        tableBody.appendChild(row);
+      });
+    })
+    .catch((error) => {
+      console.error("❌ Error fetching expenses:", error);
+    });
+});
+//policy
+document.getElementById("expenseForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const amount = parseFloat(document.getElementById("amount").value);
+  const category = document.getElementById("category").value;
+  const citygroup = document.getElementById("citygroup").value;
+  const grade = "Manager"; // 👈 Replace with actual logged-in user grade
+
+  // 🚨 Fetch Policy First
+  const policyRes = await fetch(`http://localhost:3000/api/policies?grade=${grade}&category=${category}&city_group=${citygroup}`);
+  
+  if (!policyRes.ok) {
+    alert("Policy not found for this category!");
+    return;
+  }
+
+  const policy = await policyRes.json();
+
+  if (amount > policy.max_amount_per_day) {
+    alert(`❌ Policy Violation! Max allowed is ₹${policy.max_amount_per_day}`);
+    return;
+  }
+
+  // ✅ Continue with form submission
+  this.submit();
+});
+
+</script>
+
+</body>
+</html>

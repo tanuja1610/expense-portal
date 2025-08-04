@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDM Expense Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 20px;
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 120px;
+            flex-direction: column;
+        }
+
+        .file-upload-label:hover {
+            background: #e3f2fd;
+            border-color: #1976d2;
+        }
+
+        .file-upload-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="radio"],
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto 0;
+            display: block;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .expenses-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid #e1e5e9;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9em;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-submitted {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .bill-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .bill-link:hover {
+            text-decoration: underline;
+        }
+
+        .currency-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .currency-input input {
+            flex: 1;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+        .autocomplete-suggestions div:hover {
+    background: #eee;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Expense Form</h1>
+            <p>Submit your expense</p>
+        </div>
+
+        <div class="form-container">
+            <form id="expenseForm" enctype="multipart/form-data">
+                
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="bills">Upload Bills/Receipts</label>
+                        <div class="file-upload">
+                            <input type="file" id="bills" name="bills" multiple accept=".jpg,.jpeg,.png,.pdf">
+                            <label for="bills" class="file-upload-label">
+                                <div class="file-upload-icon">📎</div>
+                                <strong>Choose files or drag them here</strong>
+                                <span style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                                    Supported formats: JPG, PNG, PDF (Max 5 files)
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Select Expense Type *</label>
+                        <div class="checkbox-group">
+                            <input type="radio" name="expense_mode" value="cash" id="mode_cash" checked>
+                            <label for="mode_cash">Cash</label>
+                            <input type="radio" name="expense_mode" value="mileage" id="mode_mileage">
+                            <label for="mode_mileage">Mileage</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount *</label>
+                        <input type="number" id="amount" name="amount" step="0.01" required placeholder="Enter amount">
+                    </div>
+
+                    <!-- Mileage specific fields (hidden by default) -->
+                    <div id="mileageFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="vehicle_type">Vehicle Type</label>
+                            <select id="vehicle_type" name="vehicle_type">
+                                <option value="">Select Vehicle Type</option>
+                                <option value="bike">Bike</option>
+                                <option value="car">Car</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="distance_km">Distance (in KM)</label>
+                            <input type="number" id="distance_km" name="distance_km" min="1" placeholder="e.g., 10">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                       <select id="category" name="category_id" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subcategory">Subcategory *</label>
+                       <select id="subcategory" name="subcategory_id" required>
+                            <option value="">Select Subcategory</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="merchant">Merchant/Vendor</label>
+                        <input type="text" id="merchant" name="merchant" placeholder="e.g., Uber, Swiggy, Hotel Name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expense_date">Date of Expense *</label>
+                        <input type="date" id="expense_date" name="expense_date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time_of_expense">Time of Expense</label>
+                        <input type="time" id="time_of_expense" name="time_of_expense">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" placeholder="Enter city name">
+                    </div>
+                    <div class="form-group">
+    <label for="customer_name">Customer Name</label>
+    <input type="hidden" name="customer_name" id="customer_hidden">
+
+    <input type="text" id="customer_name" name="customer_name" placeholder="Start typing customer name">
+</div>
+
+                    <div class="form-group">
+                        <label for="wallet_type">Wallet Type</label>
+                        <select id="wallet_type" name="wallet_type">
+                            <option value="">Select Wallet Type</option>
+                            <option value="personal">Imprest</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customer_nature">Customer Nature</label>
+                        <select id="customer_nature" name="customer_nature">
+                            <option value="">Select Customer Nature</option>
+                            <option value="existing">KEY CUSTOMER</option>
+                            <option value="prospect">NON KEY CUSTOMER</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="business_type">Business Category *</label>
+                        <select id="business_type" name="business_type" required>
+                            <option value="">Select Business Category</option>
+                            <option value="existing">Existing Business</option>
+                            <option value="new">New Business</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="business_category">Nature Of Visit</label>
+                        <select id="business_category" name="business_category">
+                            <option value="">Select Nature Of Visit</option>
+                            <option value="sales">Business Development</option>
+                            <option value="marketing">CSR</option>
+                            <option value="operations">Complaints</option>
+                            <option value="support">Internal Meeting</option>
+                            <option value="support">Outstanding Collection</option>
+                            <option value="support">Trail</option>
+                        </select>
+                    </div>
+
+                   <!-- <div class="form-group">
+                        <label for="expense_type">Expense Type</label>
+                        <select id="expense_type" name="expense_type">
+                            <option value="">Select Expense Type</option>
+                            <option value="business">Business</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="travel">Travel</option>
+                            <option value="training">Training</option>
+                        </select>
+                    </div> -->
+
+                    <div class="form-group">
+                        <label for="user_id">User ID *</label>
+                        <input type="number" id="user_id" name="user_id" value="1" readonly>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" placeholder="Enter detailed description of the expense..."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="is_multi_day" name="is_multi_day">
+                            <label for="is_multi_day">This is a multi-day expense</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit Expense</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Mileage toggle logic
+    const mileageFields = document.getElementById('mileageFields');
+    const cashRadio = document.getElementById('mode_cash');
+    const mileageRadio = document.getElementById('mode_mileage');
+    const distanceInput = document.getElementById('distance_km');
+    const amountInput = document.getElementById('amount');
+
+    function toggleMileageFields() {
+        mileageFields.style.display = mileageRadio.checked ? 'block' : 'none';
+        if (cashRadio.checked) {
+            amountInput.removeAttribute('readonly');
+        } else {
+            amountInput.setAttribute('readonly', 'readonly');
+        }
+    }
+
+    cashRadio.addEventListener('change', toggleMileageFields);
+    mileageRadio.addEventListener('change', toggleMileageFields);
+    toggleMileageFields();
+
+    distanceInput?.addEventListener('input', () => {
+        if (mileageRadio.checked) {
+            const km = parseFloat(distanceInput.value);
+            if (!isNaN(km)) {
+                amountInput.value = (km * 5).toFixed(2);
+            }
+        }
+    });
+
+    // Load categories
+    const categorySelect = document.getElementById('category');
+    const subcategorySelect = document.getElementById('subcategory');
+
+    fetch('http://localhost:3000/api/expenses/categories')
+        .then(res => res.json())
+        .then(data => {
+            data.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                categorySelect.appendChild(option);
+            });
+        });
+
+    categorySelect.addEventListener('change', () => {
+        const categoryId = categorySelect.value;
+        subcategorySelect.innerHTML = '<option value="">Loading...</option>';
+        fetch(`http://localhost:3000/api/expenses/subcategories?category_id=${categoryId}`)
+            .then(res => res.json())
+            .then(data => {
+                subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+                data.forEach(subcat => {
+                    const option = document.createElement('option');
+                    option.value = subcat.id;
+                    option.textContent = subcat.name;
+                    subcategorySelect.appendChild(option);
+                });
+            });
+    });
+
+  const customerInput = document.getElementById('customer_name');
+const customerBox = document.createElement('div');
+customerBox.className = 'autocomplete-suggestions';
+customerBox.style.position = 'absolute';
+customerBox.style.zIndex = 1000;
+customerBox.style.background = '#fff';
+customerBox.style.border = '1px solid #ccc';
+customerBox.style.width = '100%';
+customerBox.style.maxHeight = '150px';
+customerBox.style.overflowY = 'auto';
+customerInput.parentNode.appendChild(customerBox);
+
+customerInput.addEventListener('input', async () => {
+  const val = customerInput.value.trim();
+  if (val.length < 2) return customerBox.innerHTML = '';
+
+  const res = await fetch(`http://localhost:3000/api/expenses/customers?query=${val}`);
+  const customers = await res.json();
+
+  customerBox.innerHTML = '';
+  customers.forEach(c => {
+    const item = document.createElement('div');
+    item.textContent = c.display;
+    item.style.padding = '8px';
+    item.style.cursor = 'pointer';
+    item.onclick = () => {
+      customerInput.value = c.display;
+      customerBox.innerHTML = '';
+    };
+    customerBox.appendChild(item);
+  });
+});
+
+});
+const form = document.getElementById("expenseForm");
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const formData = new FormData(form);
+
+  try {
+    const response = await fetch("http://localhost:3000/api/expenses", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    alert(result.message || "Submitted!");
+  } catch (error) {
+    console.error("Error submitting expense:", error);
+    alert("Failed to submit expense.");
+  }
+});
+
+</script>
