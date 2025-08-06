@@ -29,7 +29,7 @@ npm install
 Set up environment variables in `.env`:
 
 ```env
-PORT=5000
+PORT=3000
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=""//empty or null
